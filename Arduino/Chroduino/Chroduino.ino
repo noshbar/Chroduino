@@ -47,7 +47,7 @@ float                  g_running_total = 0.0; // the running total (meters per s
 float                  g_previous      = 0.0; // the previous reading, used for duplicates (meters per second)
 
 #ifdef FEATURE_SCREEN
-void initFEATURE_SCREEN()
+void init_screen()
 {
 #if SCREEN_HEIGHT == 64  
   if(!g_display.begin(SSD1306_SWITCHCAPVCC, 0x3D)) // Address 0x3D for 128x64
@@ -70,7 +70,7 @@ void initFEATURE_SCREEN()
 #endif    
 
 #ifdef FEATURE_BLE
-void initFEATURE_BLE()
+void init_ble()
 {
   if (!BLE.begin())
   {
@@ -126,10 +126,10 @@ void setup()
 
 #ifdef FEATURE_SCREEN
   // initialiaze the screen first, so we can print error messages on it
-  initFEATURE_SCREEN();
+  init_screen();
 #endif
 #ifdef FEATURE_BLE
-  initFEATURE_BLE();
+  init_ble();
 #endif
 }
 

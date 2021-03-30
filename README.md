@@ -6,7 +6,7 @@ This is an Arduino-based chronograph, with I2C OLED (screen) and BLE (Bluetooth,
 
 **NOTE**:
  * work in progress, doesn't seem to work with fast moving things, like BBs or pellets.
- * at the moment, the distance between IR sensors is fixed at 10cm
+ * at the moment, the distance between IR sensors is fixed at 10cm (can be changed in code!)
  * configuration is mostly done by changing `define` values at the top of the Arduino file
 
 ### Wiring
