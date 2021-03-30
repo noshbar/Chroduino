@@ -1,0 +1,85 @@
+<html>
+
+<script>
+
+var g_characteristic;
+var g_measurement_counter = 0;
+
+function start() {
+    stop();
+    
+    // these are case sensitive, and need to be lowercase
+    let service_uuid = "19b10010-e8f2-537e-4f6c-d104768a1213";
+    let characteristic_uuid = "19b10012-e8f2-537e-4f6c-d104768a1213";
+
+    log('Requesting Bluetooth Device...');
+    if (!navigator.bluetooth)
+      log('No navigator available');
+      
+    navigator.bluetooth.requestDevice({
+            filters: [{
+                services: [service_uuid]
+            }]
+        })
+        .then(device => {
+            log('Connecting to GATT Server...');
+            return device.gatt.connect();
+        })
+        .then(server => {
+            log('Getting Service...');
+            return server.getPrimaryService(service_uuid);
+        })
+        .then(service => {
+            log('Getting Characteristic...');
+            return service.getCharacteristic(characteristic_uuid);
+        })
+        .then(characteristic => {
+            g_characteristic = characteristic;
+            return g_characteristic.startNotifications().then(_ => {
+                log('> Notifications started');
+                g_characteristic.addEventListener('characteristicvaluechanged',
+                    handleNotifications);
+            });
+        })
+        .catch(error => {
+            log('Argh! ' + error);
+        });
+}
+
+function stop() {
+    if (g_characteristic) {
+        g_characteristic.stopNotifications()
+            .then(_ => {
+                log('> Notifications stopped');
+                g_characteristic.removeEventListener('characteristicvaluechanged',
+                    handleNotifications);
+            })
+            .catch(error => {
+                log('Argh! ' + error);
+            });
+    }
+    
+    g_measurement_counter = 0;
+}
+
+function handleNotifications(event) {
+    g_measurement_counter++;
+    log(g_measurement_counter + ": " + parseFloat(event.target.value.getFloat32(0, true).toFixed(2)) + " m/s");
+}
+
+function log(value)
+{
+    var new_node = document.createElement('div');
+    new_node.innerHTML = value;
+    document.querySelector("div.list").appendChild(new_node);
+}
+
+</script>
+
+<body>
+  <button onclick="start()">Start</button>
+  <button onclick="stop()">Stop</button>
+  <button onclick="document.querySelector('div.list').innerHTML='';">Clear</button>
+  <div class="list"></div>
+</body>
+</html>
